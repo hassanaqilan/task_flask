@@ -1,7 +1,6 @@
+from domain.entities.student import Student
 from flask import jsonify, request
 from flask.views import MethodView
-
-from domain.entities.student import Student
 from infra.repo.student_repo import StudentRepo
 
 

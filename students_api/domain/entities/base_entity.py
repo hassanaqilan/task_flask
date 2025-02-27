@@ -6,3 +6,4 @@ from datetime import datetime
 class BaseEntity:
     id: int
     created_at: datetime
+    updated_at: datetime
