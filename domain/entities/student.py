@@ -9,8 +9,3 @@ class Student(BaseEntity):
         self.name = name
         self.age = age
         self.grade = grade
-
-    def update(self, data):
-        for key, value in data.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
