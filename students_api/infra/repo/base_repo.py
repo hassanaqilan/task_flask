@@ -1,37 +1,45 @@
-from typing import Any, Generic, Type, TypeVar
+from typing import Any, Generic, Type, TypeVar, Union
 
 from domain.entities.base_entity import BaseEntity
 
 E = TypeVar('E', bound='BaseEntity')
 
 
-mydatabase = {}
+mydatabase = {}  # type: ignore
 
 
 class BaseRepo(Generic[E]):
-    def __init__(self, entitty_name: str, entity: Type[E]) -> None:
+    def __init__(self, entity_name: str, entity: Type[E]) -> None:
         self.entity = entity
-        self.entitty_name = entitty_name
+        self.entity_name = entity_name
 
     def insert(self, entity: E) -> E:
-        if self.entitty_name not in mydatabase:
-            mydatabase[self.entitty_name] = {}
-        mydatabase[self.entitty_name][entity.id] = entity
+        if self.entity_name not in mydatabase:
+            mydatabase[self.entity_name] = {}
+        mydatabase[self.entity_name][entity.id] = entity
         return entity
 
     def get_all(self) -> list[E]:
-        return list(mydatabase[self.entitty_name].values())
+        return list(mydatabase[self.entity_name].values())
 
-    def get(self, id: int) -> E:
-        return mydatabase[self.entitty_name].get(id)
+    def get(self, id: int) -> Union[E, tuple[str, int], Any]:
+        if self.entity_name not in mydatabase:
+            return 'database is empty', 400
+        if id not in mydatabase[self.entity_name]:
+            return 'not found', 404
+        return mydatabase[self.entity_name].get(id)
 
     def update(self, id: int, data: dict[str, Any]) -> bool:
-        entity = mydatabase[self.entitty_name].get(id)
+        entity = mydatabase[self.entity_name].get(id)
         if entity:
             entity.update(data)
             return True
         return False
 
     def delete(self, id: int) -> None:
-        mydatabase[self.entitty_name].pop(id)
+        if id in mydatabase[self.entity_name]:
+            mydatabase[self.entity_name].pop(id)
+        else:
+            # Optionally handle the case where the ID does not exist
+            print(f'Entity with id {id} not found.')
         return None
