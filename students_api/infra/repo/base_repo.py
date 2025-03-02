@@ -1,11 +1,11 @@
-from typing import Any, Generic, Type, TypeVar, Union
+from typing import Any, Dict, Generic, Type, TypeVar
 
 from students_api.domain.entities.base_entity import BaseEntity
 
 E = TypeVar('E', bound='BaseEntity')
 
 
-mydatabase = {}  # type: ignore
+mydatabase: Dict[str, dict[int, E]] = {}  # type: ignore
 
 
 class BaseRepo(Generic[E]):
@@ -22,24 +22,22 @@ class BaseRepo(Generic[E]):
     def get_all(self) -> list[E]:
         return list(mydatabase[self.entity_name].values())
 
-    def get(self, id: int) -> Union[E, tuple[str, int], Any]:
+    def get(self, id: int) -> E | None:
         if self.entity_name not in mydatabase:
-            return 'database is empty', 400
+            return None
         if id not in mydatabase[self.entity_name]:
-            return 'not found', 404
+            return None
         return mydatabase[self.entity_name].get(id)
 
-    def update(self, id: int, data: dict[str, Any]) -> bool:
+    def update(self, id: int, data: dict[str, Any]) -> E | None:
         entity = mydatabase[self.entity_name].get(id)
         if entity:
             entity.update(data)
-            return True
-        return False
-
-    def delete(self, id: int) -> None:
-        if id in mydatabase[self.entity_name]:
-            mydatabase[self.entity_name].pop(id)
-        else:
-            # Optionally handle the case where the ID does not exist
-            print(f'Entity with id {id} not found.')
+            return entity
         return None
+
+    def delete(self, id: int) -> E | None:
+        if id in mydatabase[self.entity_name]:
+            return mydatabase[self.entity_name].pop(id)
+        else:
+            return None

@@ -10,9 +10,6 @@ from students_api.infra.repo.student_repo import StudentRepo
 
 class StudentAPI(MethodView):
 
-    def __init__(self) -> None:
-        super().__init__()
-
     def instance(self) -> Any:
         student_view = StudentAPI.as_view('student_api')
         return student_view
@@ -45,10 +42,11 @@ class StudentAPI(MethodView):
 
         return jsonify({'error': 'Student not found'}), 404
 
-    def put(self, student_id: int) -> Union[Dict[str, Any],
-                                            Tuple[Dict[str, str], int]]:
+    def put(self, student_id: int) -> Union[Any, None, Student,
+                                            Tuple[Dict[str, str], int],
+                                            Dict[str, Any]]:
         try:
-            req: Dict[str, Any] = request.json  # type: ignore
+            req = request.json
             student_repo = StudentRepo()
             student = student_repo.get(student_id)
 

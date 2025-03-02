@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any
 
 from students_api.domain.entities.base_entity import BaseEntity
 
@@ -10,7 +10,7 @@ class Student(BaseEntity):
     age: int
     grade: int
 
-    def update(self, data: Dict[str, Any]) -> "Student":
+    def update(self, data: Any) -> 'Student':
         for key, value in data.items():
             if hasattr(self, key):
                 setattr(self, key, value)
