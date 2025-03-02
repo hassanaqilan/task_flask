@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from typing import Any, Dict
 
-from domain.entities.base_entity import BaseEntity
+from students_api.domain.entities.base_entity import BaseEntity
 
 
 @dataclass
-class Student(BaseEntity):  # type: ignore
+class Student(BaseEntity):
     name: str
     age: int
     grade: int

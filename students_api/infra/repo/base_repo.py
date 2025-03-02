@@ -1,6 +1,6 @@
 from typing import Any, Generic, Type, TypeVar, Union
 
-from domain.entities.base_entity import BaseEntity
+from students_api.domain.entities.base_entity import BaseEntity
 
 E = TypeVar('E', bound='BaseEntity')
 

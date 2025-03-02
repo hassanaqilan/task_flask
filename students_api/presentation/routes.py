@@ -1,10 +1,11 @@
 from datetime import datetime
 from typing import Any, Dict, Optional, Tuple, Union
 
-from domain.entities.student import Student
 from flask import Response, jsonify, request
 from flask.views import MethodView
-from infra.repo.student_repo import StudentRepo
+
+from students_api.domain.entities.student import Student
+from students_api.infra.repo.student_repo import StudentRepo
 
 
 class StudentAPI(MethodView):
@@ -47,11 +48,14 @@ class StudentAPI(MethodView):
     def put(self, student_id: int) -> Union[Dict[str, Any],
                                             Tuple[Dict[str, str], int]]:
         try:
-            req = request.json
+            req: Dict[str, Any] = request.json  # type: ignore
             student_repo = StudentRepo()
             student = student_repo.get(student_id)
+
+            if not isinstance(student, Student):
+                return {'response': 'Student not found'}, 404
             student.update(req)
-            return student.__dict__  # type: ignore
+            return student.__dict__
         except (IndexError, KeyError) as e:
             return {'response': f'Error updating student: {str(e)}'}, 400
 

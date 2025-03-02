@@ -1,5 +1,6 @@
 from flask import Flask
-from presentation.routes import StudentAPI
+
+from students_api.presentation.routes import StudentAPI
 
 
 def create_app() -> Flask:
