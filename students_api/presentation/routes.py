@@ -1,14 +1,19 @@
-from datetime import datetime
 from typing import Any, Dict, Optional, Tuple, Union
 
 from flask import Response, jsonify, request
 from flask.views import MethodView
 
 from students_api.domain.entities.student import Student
-from students_api.infra.repo.student_repo import StudentRepo
+from students_api.application.student_service import StudentService
+from students_api.infra.unit_of_work import UnitOfWork
 
 
 class StudentAPI(MethodView):
+
+    def __init__(self):
+        uow = UnitOfWork()
+        self.student_service = StudentService(uow)
+        super().__init__()
 
     def instance(self) -> Any:
         student_view = StudentAPI.as_view('student_api')
@@ -16,30 +21,19 @@ class StudentAPI(MethodView):
 
     def post(self) -> Any:
         data = request.get_json()
-        student = Student(
-            id=data['id'],
-            name=data['name'],
-            age=data['age'],
-            grade=data['grade'],
-            created_at=datetime.now(),
-        )
-        student_repo = StudentRepo()
-        student_repo.insert(student)
+        student = self.student_service.create_student(data)
         return jsonify(student), 201
 
     def get(
         self, student_id: Optional[int] = None
     ) -> Union[Response, Tuple[Response, int]]:
-        student_repo = StudentRepo()
         if student_id is None:
-            students = student_repo.get_all()
-            return jsonify({'students':
-                            [student.__dict__ for student in students]})
+            students = self.student_service.get_students()
+            return jsonify(students)
         else:
-            student = student_repo.get(student_id)
+            student = self.student_service.get_student_by_id(student_id)
             if student:
-                return jsonify(student.__dict__)
-
+                return dict(student)
         return jsonify({'error': 'Student not found'}), 404
 
     def put(self, student_id: int) -> Union[Any, None, Student,
@@ -47,20 +41,14 @@ class StudentAPI(MethodView):
                                             Dict[str, Any]]:
         try:
             req = request.json
-            student_repo = StudentRepo()
-            student = student_repo.get(student_id)
-
-            if not isinstance(student, Student):
-                return {'response': 'Student not found'}, 404
-            student.update(req)
-            return student.__dict__
+            student = self.student_service.update_student(student_id, req)
+            return dict(student)
         except (IndexError, KeyError) as e:
             return {'response': f'Error updating student: {str(e)}'}, 400
 
     def delete(self, student_id: int) -> Tuple[Dict[str, str], int]:
         try:
-            student_repo = StudentRepo()
-            student_repo.delete(student_id)
-            return {'response': f'{student_id} has been removed'}, 200
+            response = self.student_service.delete_student(student_id)
+            return dict(response)
         except IndexError:
             return {'response': f'{student_id} not found'}, 404
