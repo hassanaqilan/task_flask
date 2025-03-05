@@ -3,8 +3,8 @@ from typing import Any, Dict, Optional, Tuple, Union
 from flask import Response, jsonify, request
 from flask.views import MethodView
 
-from students_api.domain.entities.student import Student
 from students_api.application.student_service import StudentService
+from students_api.domain.entities.student import Student
 from students_api.infra.unit_of_work import UnitOfWork
 
 

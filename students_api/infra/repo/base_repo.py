@@ -1,5 +1,7 @@
 from typing import Any, Dict, Generic, Type, TypeVar
-from sqlalchemy import insert, select, update, delete
+
+from sqlalchemy import delete, insert, select, update
+
 from students_api.domain.entities.base_entity import BaseEntity
 from students_api.infra.db.connection import Connection
 

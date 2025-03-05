@@ -1,7 +1,8 @@
+from datetime import datetime
+
 from students_api.application.base_service import BaseService
 from students_api.domain.entities.student import Student
 from students_api.infra.repo.student_repo import StudentRepo
-from datetime import datetime
 
 
 class StudentService(BaseService):

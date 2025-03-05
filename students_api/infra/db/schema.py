@@ -1,8 +1,8 @@
-from sqlalchemy import Table, Column, Integer, String, DateTime
+from sqlalchemy import Column, DateTime, Integer, String, Table, MetaData, Engine
 
 
 class Schema:
-    def __init__(self, metadata, engine):
+    def __init__(self, metadata: MetaData, engine: Engine) -> None:
 
         self.metadata_obj = metadata
         self.engine = engine
@@ -16,5 +16,5 @@ class Schema:
             Column("created_at", DateTime))
         self.metadata_obj.create_all(self.engine)
 
-    def student(self):
+    def student(self) -> Table:
         return self.student_table
